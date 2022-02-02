@@ -1,0 +1,16 @@
+/node_modules
+/public/storage
+/public/mix-manifest.json
+.env
+.env.backup
+.phpunit.result.cache
+/.idea
+
+_ide_helper.php
+.php_cs.cache
+.phpstorm.meta.php
+
+
+/public/js
+/public/css
+/vendor
