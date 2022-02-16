@@ -17,9 +17,13 @@ class CreateTransportValidation extends BaseValidation
     {
         return [
             'type' => ['required', 'string', 'max:30'],
-            'mark'    => ['required', 'string', 'max:30', Rule::in(Transport::MARKS),],
+            'mark'    => ['required', 'string', 'max:30', Rule::in(Transport::MARKS)],
             'model'   => ['required', 'string', 'max:30'],
             'cost'     => ['required', 'integer',],
+            'transmission'   => ['required', 'string', 'max:30', Rule::in(Transport::TRANSMISSIONS)],
+            'age'   => ['required', 'integer'],
+            'engine_type'   => ['required', 'string', Rule::in(Transport::ENGINE_TYPES)],
+            'drive_type'   => ['required', 'string', Rule::in(Transport::DRIVE_TYPES)],
         ];
     }
 }

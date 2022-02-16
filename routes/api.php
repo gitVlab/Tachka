@@ -20,6 +20,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route
-    ::post('/transport', Controllers\Transport\Api\CreateTransportApiAction::class)
+    ::middleware('auth:api')->post('/transport', Controllers\Transport\Api\CreateTransportApiAction::class)
     ->name('transport.api.create')
+;
+
+Route
+    ::middleware('auth:api')->get('/transports', Controllers\Transport\Api\TransportApiAction::class)
+    ->name('transport.api.filter')
 ;

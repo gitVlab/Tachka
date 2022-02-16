@@ -2,14 +2,37 @@
 
 namespace App\Models;
 
+use App\Http\Filters\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Transport extends Model implements TransportInterface
+/**
+ * @property int                  $id
+ * @property int                  $age
+ * @property string               $type
+ * @property string               $mark
+ * @property string               $model
+ * @property string               $transmission
+ * @property string               $engine_type
+ * @property string               $drive_type
+ * @property numeric              $cost
+ * @property-read Customer        $customer
+ */
+
+class Transport extends Model
 {
     use HasFactory;
+    use Filterable;
+
+    protected $table = 'transport';
+
+    /** @var string[] */
+    public const TYPES = [
+        'легковой',
+        'грузовой',
+    ];
 
     /** @var string[] */
     public const MARKS = [
@@ -20,21 +43,41 @@ class Transport extends Model implements TransportInterface
         'porsche',
     ];
 
+    public const TRANSMISSIONS = [
+        'автомат',
+        'механика',
+    ];
+
+    public const ENGINE_TYPES = [
+        'бензин',
+        'дизель',
+        'газ',
+    ];
+
+    public const DRIVE_TYPES = [
+        'передний',
+        'задний',
+        'полный',
+    ];
+
     protected $fillable = [
         'type',
         'mark',
         'model',
         'cost',
-        'user_id'
+        'transmission',
+        'age',
+        'engine_type',
+        'drive_type',
     ];
 
     public function customer(): BelongsTo
     {
-        return $this->belongsTo(Customer::class, 'transport_id', 'id');
+        return $this->belongsTo(Customer::class, 'customer_id', 'id');
     }
 
-    public function createTransport(Model $instance): Model
+    public function advert(): HasMany
     {
-        // TODO: Implement createTransport() method.
+        return $this->hasMany(Advert::class, 'customer_id', 'id');
     }
 }

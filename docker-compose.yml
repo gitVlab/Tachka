@@ -2,18 +2,25 @@ version: '3.8'
 
 services:
   db:
-    image: mysql
-    restart: always
-    command: --default-authentication-plugin=mysql_native_password
+    image: mysql:latest
+    container_name: "tachka-${APP_ENV}-mysql"
+    restart: unless-stopped
+    cap_add:
+      - SYS_NICE
     networks:
       - internal
+    ports:
+      - "127.0.0.1:3307:3306"
     environment:
       - MYSQL_DATABASE=${DB_DATABASE}
       - MYSQL_USER=${DB_USERNAME}
       - MYSQL_PASSWORD=${DB_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+#    volumes:
+#      - ./docker/mysql/datadir:/var/lib/mysql
     volumes:
-      - ./docker/mysql/datadir:/var/lib/mysql
+      - "/opt/tachka/${APP_ENV}/mysql-data:/var/lib/mysql"
+
   php-fpm:
     build:
       context: docker/php-fpm
@@ -26,6 +33,7 @@ services:
       - db
     networks:
       - internal
+
   nginx:
     build:
       context: docker/nginx
@@ -33,11 +41,31 @@ services:
       - ./:/var/www/
       - ./storage/app/public/:/var/www/public/storage/
     ports:
-      - 127.0.0.1:8080:80
+      - "127.0.0.1:8081:80"
     depends_on:
       - php-fpm
     networks:
       - internal
+
+  node:
+    build:
+      context: docker/node
+      dockerfile: Dockerfile
+      cache_from:
+        - node:16-alpine3.14
+      args:
+        uid: ${LOCAL_UID}
+    image: node:16-alpine3.14
+    container_name: "tachka-${APP_ENV}-node"
+    volumes:
+      - .:/home/node
+      - $HOME/.npm:/tmp/npm-cache
+    entrypoint: sh -c "npm cache clear --force; npm i -D; npm run watch"
+    environment:
+      npm_config_cache: /tmp/npm-cache
+    networks:
+      - internal
+
 networks:
   internal:
     driver: bridge

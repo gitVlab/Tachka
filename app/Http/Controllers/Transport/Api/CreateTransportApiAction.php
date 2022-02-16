@@ -42,7 +42,7 @@ class CreateTransportApiAction extends BaseAction
         }
 
         try {
-            $result = $this->transportFactory->create(Auth::id(), $validation->getValidated());
+            $result = $this->transportFactory->create($request->user(), $validation->getValidated());
         } catch (\Throwable $exception) {
             return $this->responses->json([
                 'errors' => $exception->getMessage(),
